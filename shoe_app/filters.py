@@ -1,21 +1,21 @@
 from admin_auto_filters.filters import AutocompleteFilter
 
 
-class AuthorsFilter(AutocompleteFilter):
-    title = 'Author'
-    field_name = 'authors'
+class CategoryFilter(AutocompleteFilter):
+    title = 'Category Filter'
+    field_name = 'category'
 
 
-class GenresFilter(AutocompleteFilter):
-    title = 'Genre'
-    field_name = 'genres'
+class ShoeFilter(AutocompleteFilter):
+    title = 'Shoe Filter'
+    field_name = 'shoe'
 
 
-class BooksFilter(AutocompleteFilter):
-    title = 'Book'
-    field_name = 'book'
+class SizeFilter(AutocompleteFilter):
+    title = 'Size Filter'
+    field_name = 'size'
 
 
-class BorrowersFilter(AutocompleteFilter):
-    title = 'Borrower'
-    field_name = 'borrower'
+class UserFilter(AutocompleteFilter):
+    title = 'User Filter'
+    field_name = 'user'
