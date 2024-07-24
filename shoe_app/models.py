@@ -20,7 +20,7 @@ def shoe_directory_path(instance, filename):
 
 class Shoe(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='shoes', verbose_name=_('Category'))
-    name = models.CharField(max_length=100, verbose_name=_('Name'), null=False, blank=False)  # Add Unique or not
+    name = models.CharField(max_length=100, verbose_name=_('Name'), null=False, blank=False)
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
     base_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Price'), default=0, null=False,
                                      blank=False)
@@ -33,19 +33,6 @@ class Shoe(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class ShoeSize(models.Model):
-    shoe = models.ForeignKey(Shoe, on_delete=models.CASCADE, related_name='sizes', verbose_name=_('Shoe'))
-    size = models.IntegerField(default=40, verbose_name=_('Size'), null=False, blank=False)
-    available_amount = models.IntegerField(default=0, verbose_name=_('Available amount'), null=False, blank=False)
-
-    class Meta:
-        verbose_name = _('Shoe Size')
-        verbose_name_plural = _('Shoes Sizes')
-
-    def __str__(self):
-        return self.size
 
 
 class Review(models.Model):

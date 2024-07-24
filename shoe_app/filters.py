@@ -11,11 +11,6 @@ class ShoeFilter(AutocompleteFilter):
     field_name = 'shoe'
 
 
-class SizeFilter(AutocompleteFilter):
-    title = 'Size Filter'
-    field_name = 'size'
-
-
 class UserFilter(AutocompleteFilter):
     title = 'User Filter'
     field_name = 'user'
