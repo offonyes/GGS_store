@@ -1,9 +1,6 @@
-from django.contrib import admin
-from rest_framework.routers import DefaultRouter
 from django.urls import path
 
 from accounts_app.views import RegisterView, ProfileView
-router = DefaultRouter()
 
 
 urlpatterns = [

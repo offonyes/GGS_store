@@ -24,7 +24,8 @@ class Shoe(models.Model):
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
     base_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Price'), default=0, null=False,
                                      blank=False)
-    # MB add some discount for this
+    discount_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Discount Price'),
+                                         default=0, null=False)
     image = models.ImageField(upload_to=shoe_directory_path, null=True, blank=True, verbose_name=_('Image'))
 
     class Meta:

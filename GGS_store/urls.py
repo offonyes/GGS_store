@@ -4,10 +4,12 @@ from django.urls import path, include
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("__debug__/", include("debug_toolbar.urls")),
-    path("api/", include("accounts_app.urls")),
+    path('__debug__/', include("debug_toolbar.urls")),
+    path('api/v1/', include("accounts_app.urls")),
+    path('api/v1/', include('shoe_app.urls')),
 
     path('api-auth/', include('rest_framework.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

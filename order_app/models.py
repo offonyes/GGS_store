@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 from order_app.choice import StatusChoices
 
 
-# Подъем и размеры понять нормально
 class Order(models.Model):
     user = models.ForeignKey('accounts_app.CustomUser', on_delete=models.CASCADE, related_name='order',
                              verbose_name=_('User'))
@@ -23,7 +22,6 @@ class OrderItem(models.Model):
     size = models.PositiveIntegerField(default=40, verbose_name=_('Size'), null=False, blank=False)
     color = models.CharField(max_length=50, verbose_name=_('Color'), null=False, blank=False)
     quantity = models.PositiveIntegerField(default=1, verbose_name=_('Quantity'), null=False, blank=False)
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Price'), null=False, blank=False)
     date_added = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=_('Date Added'))
 
     def __str__(self):
@@ -36,7 +34,7 @@ class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=_('Created at'))
 
     def __str__(self):
-        return f"Cart of {self.user.username}"
+        return f"Cart of {self.user.email}"
 
 
 class CartItem(models.Model):
@@ -46,7 +44,6 @@ class CartItem(models.Model):
     size = models.PositiveIntegerField(default=40, verbose_name=_('Size'), null=False, blank=False)
     color = models.CharField(max_length=50, verbose_name=_('Color'), null=False, blank=False)
     quantity = models.PositiveIntegerField(default=1, verbose_name=_('Quantity'), null=False, blank=False)
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Price'), null=False, blank=False)
     date_added = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=_('Date Added'))
 
     def __str__(self):
