@@ -3,9 +3,11 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from shoe_app.choice import GenderStatus
+from shoe_app.managers import CategoryManager, ShoeManager
 
 
 class Category(models.Model):
+    objects = CategoryManager()
     name = models.CharField(verbose_name=_('Name'), max_length=100, null=False, blank=False,
                             unique=True)
     gender = models.IntegerField(choices=GenderStatus, default=GenderStatus.MALE, verbose_name=_('Gender'))
@@ -19,6 +21,7 @@ def shoe_directory_path(instance, filename):
 
 
 class Shoe(models.Model):
+    objects = ShoeManager()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='shoes', verbose_name=_('Category'))
     name = models.CharField(max_length=100, verbose_name=_('Name'), null=False, blank=False)
     description = models.TextField(null=True, blank=True, verbose_name=_('Description'))
