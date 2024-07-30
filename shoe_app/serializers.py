@@ -4,6 +4,8 @@ from shoe_app.models import Category, Shoe, Review
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    shoe_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Category
         fields = '__all__'

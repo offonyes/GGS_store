@@ -17,8 +17,10 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = [UserFilter, 'status']
     date_hierarchy = 'date_ordered'
     list_editable = ['status']
-    readonly_fields = ['date_ordered']
+    readonly_fields = ['date_ordered', 'items', 'total_price']
     show_full_result_count = False
+    fieldsets = ((None, {'fields': ('user', ('date_ordered', 'status'))}),
+                 ('Additional Information', {'fields': (('items', 'total_price'),)}))
 
     def get_queryset(self, request):
         return (super(OrderAdmin, self)
@@ -46,6 +48,8 @@ class OrderItemAdmin(admin.ModelAdmin):
     date_hierarchy = 'date_added'
     readonly_fields = ['date_added']
     show_full_result_count = False
+    fieldsets = ((None, {'fields': (('order', 'shoe'), ('size', 'color'), ('price', 'quantity'), 'date_added'),
+                         'classes': ('wide',)}),)
 
     def get_queryset(self, request):
         return (super(OrderItemAdmin, self)
@@ -60,8 +64,10 @@ class CartAdmin(admin.ModelAdmin):
     search_fields = ['user']
     list_filter = [UserFilter]
     date_hierarchy = 'created_at'
-    readonly_fields = ['created_at']
+    readonly_fields = ['created_at', 'items', 'total_price']
     show_full_result_count = False
+    fieldsets = ((None, {'fields': ('user', 'created_at')}),
+                 ('Additional Information', {'fields': (('items', 'total_price'),)}))
 
     def get_queryset(self, request):
         return (super(CartAdmin, self)
@@ -89,6 +95,8 @@ class CartItemAdmin(admin.ModelAdmin):
     date_hierarchy = 'date_added'
     readonly_fields = ['date_added']
     show_full_result_count = False
+    fieldsets = ((None, {'fields': (('cart', 'shoe'), ('size', 'color'), ('price', 'quantity'), 'date_added'),
+                         'classes': ('wide',)}),)
 
     def get_queryset(self, request):
         return (super(CartItemAdmin, self)

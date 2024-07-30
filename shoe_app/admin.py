@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Count, Q, Sum, F, Case, When
 
 from shoe_app.models import Shoe, Category, Review
 from shoe_app.filters import CategoryFilter, ShoeFilter, UserFilter
@@ -10,7 +11,9 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'gender', 'shoe_count']
     search_fields = ['name']
     list_filter = ['gender']
+    readonly_fields = ['shoe_count']
     show_full_result_count = False
+    fieldsets = ((None, {'fields': (('name', 'gender'), 'shoe_count')}),)
 
     def shoe_count(self, obj):
         return obj.shoe_count
@@ -22,14 +25,21 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Shoe)
 class ShoeAdmin(admin.ModelAdmin):
     autocomplete_fields = ['category']
-    list_display = ['name', 'base_price', 'sales_count', 'total_profit']
+    list_display = ['name', 'base_price', 'sales_count', 'total_profit', 'review_avg']
     search_fields = ['name']
     list_filter = [CategoryFilter]
+    readonly_fields = ['sales_count', 'total_profit', 'review_avg']
     show_full_result_count = False
+    fieldsets = (('Main Information', {'fields': (('category', 'name'), ('base_price', 'discount_price'), 'image',
+                                                  'description')}),
+                 ('Statistic', {'fields': (('sales_count', 'total_profit'), 'review_avg'),
+                                'classes': ('collapse',)}))
 
     def get_queryset(self, request):
         return (super(ShoeAdmin, self)
                 .get_queryset(request).select_related('category')
+                .annotate(sales_count=Sum('orderitems__quantity'),
+                          total_profit=Sum(F('orderitems__quantity') * F('orderitems__price')))
                 .defer(*{f'category__{x.name}' for x in Category._meta.fields if x.name not in {'name'}}))
 
     def sales_count(self, obj):
@@ -43,6 +53,12 @@ class ShoeAdmin(admin.ModelAdmin):
 
     total_profit.short_description = 'Total Profit'
     total_profit.admin_order_field = 'total_profit'
+
+    def review_avg(self, obj):
+        return obj.review_avg
+
+    review_avg.short_description = 'Review Average'
+    review_avg.admin_order_field = 'review_avg'
 
 
 @admin.register(Review)

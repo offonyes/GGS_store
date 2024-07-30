@@ -41,10 +41,12 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 @extend_schema(tags=['Shoe'], description='Retrieve all shoes.')
 class ShoeViewSet(viewsets.ModelViewSet):
-    queryset = Shoe.objects.all()
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     ordering = ['id']
-    # search_fields = ['name']
+
+    def get_queryset(self):
+        qs = Shoe.objects.all()
+        return qs.select_related('category')
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve', 'review']:
@@ -82,11 +84,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = self.queryset
-        qs = qs.filter(user=self.request.user)
+        qs = qs.filter(user=self.request.user).select_related('shoe', 'user')
         return qs
 
     def get_serializer_class(self):
-        if self.action == 'retrieve':
+        if self.action in ['retrieve', 'list']:
             return ReviewSerializer
         return CreateReviewSerializer
 
