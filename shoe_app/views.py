@@ -74,7 +74,7 @@ class ShoeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@extend_schema(tags=['Review'],)
+@extend_schema(tags=['Review'], description='Retrieve a review from user and create a new review.')
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     permission_classes = [permissions.IsAuthenticated]

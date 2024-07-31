@@ -12,9 +12,11 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ShoeSerializer(serializers.ModelSerializer):
+    review_avg = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Shoe
-        fields = '__all__'
+        fields = ['id', 'name', 'description', 'base_price', 'discount_price', 'image', 'review_avg', 'category']
         depth = 1
 
 
@@ -25,12 +27,11 @@ class CreateShoeSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    shoe_name = serializers.CharField(source='shoe.name', read_only=True)
     user_full_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
-        fields = ['id', 'shoe', 'user',  'shoe_name', 'user_full_name', 'rating', 'comment', 'created_at']
+        fields = ['id', 'shoe', 'user', 'user_full_name', 'rating', 'comment', 'created_at']
 
     def get_user_full_name(self, obj):
         return f"{obj.user.first_name} {obj.user.last_name}"

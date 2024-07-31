@@ -8,6 +8,9 @@ from order_app.filters import OrderFilter, CartFilter
 from order_app.models import Order, OrderItem, Cart, CartItem
 from accounts_app.models import CustomUser
 
+admin.site.site_header = "GGS Admin"
+admin.site.site_title = "GGS Admin Page"
+admin.site.index_title = "Welcome to GGS Admin Page"
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

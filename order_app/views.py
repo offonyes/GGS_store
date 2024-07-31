@@ -20,6 +20,7 @@ class BasicPagination(PageNumberPagination):
     max_page_size = 25
 
 
+@extend_schema(tags=['Order'], description='Retrieve user orders and create a order.')
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
@@ -33,8 +34,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         return qs
 
     def create(self, request, *args, **kwargs):
-        print(self.request.user)
-        print(request.user)
         user = request.user
         cart = Cart.objects.filter(user=user).first()
 
