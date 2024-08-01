@@ -17,21 +17,18 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'status', 'date_ordered', 'orderitems']
 
 
-class DetailOrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = '__all__'
-
-
 class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ['id', 'shoe', 'size', 'color', 'price', 'quantity', 'date_added']
+        fields = '__all__'
+        read_only_fields = ['cart', 'price']
 
 
 class CartSerializer(serializers.ModelSerializer):
-    cart_items = CartItemSerializer(many=True, read_only=True)
+    cartitems = CartItemSerializer(many=True, read_only=True)
+    items = serializers.IntegerField(read_only=True)
+    total_price = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Cart
-        fields = ['id', 'user', 'created_at', 'cart_items']
+        fields = '__all__'

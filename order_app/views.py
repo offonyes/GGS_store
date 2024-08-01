@@ -8,9 +8,11 @@ from django.shortcuts import get_object_or_404
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from rest_framework.viewsets import GenericViewSet
+from rest_framework import mixins
 
 from order_app.models import Order, OrderItem, Cart, CartItem
-from order_app.serializers import OrderSerializer, OrderItemSerializer, CartSerializer, CartItemSerializer, DetailOrderSerializer
+from order_app.serializers import OrderSerializer, CartSerializer, CartItemSerializer
 from shoe_app.models import Shoe
 
 
@@ -31,7 +33,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = self.queryset.filter(user=self.request.user)
-        return qs
+        return qs.prefetch_related('orderitems')
 
     def create(self, request, *args, **kwargs):
         user = request.user
@@ -63,51 +65,38 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class CartViewSet(viewsets.ViewSet):
+@extend_schema(tags=['Cart'], description='Retrieve user cart.')
+class CartViewSet(mixins.RetrieveModelMixin,
+                  mixins.ListModelMixin,
+                  GenericViewSet):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = BasicPagination
+    filter_backends = (filters.OrderingFilter,)
 
-    def list(self, request):
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        cart_items = cart.cartitems.all().order_by('id')
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user).prefetch_related('cartitems')
 
-        paginator = self.pagination_class()
-        paginated_cart_items = paginator.paginate_queryset(cart_items, request)
-
-        serializer = CartItemSerializer(paginated_cart_items, many=True)
-        return paginator.get_paginated_response(serializer.data)
-
-    @action(detail=False, methods=['post'])
+    @extend_schema(tags=['Cart'], description='Add items to cart.')
+    @action(detail=False, methods=['post'], url_path='add-item', serializer_class=CartItemSerializer)
     def add_item(self, request):
-        user = request.user
-        cart, created = Cart.objects.get_or_create(user=user)
-        shoe_id = request.data.get('shoe')
-        size = request.data.get('size')
-        color = request.data.get('color')
-        price = request.data.get('price')
-        quantity = request.data.get('quantity', 1)
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        data = request.data.copy()
 
-        if not shoe_id or not size or not color or not price:
-            return Response({'detail': 'Missing required fields.'}, status=status.HTTP_400_BAD_REQUEST)
+        data['cart'] = cart.id
 
+        shoe_id = data.get('shoe')
         shoe = get_object_or_404(Shoe, id=shoe_id)
+        data['price'] = shoe.discount_price if (shoe.discount_price < shoe.base_price and
+                                                shoe.discount_price != 0) else shoe.base_price
 
-        cart_item, created = CartItem.objects.get_or_create(
-            cart=cart,
-            shoe=shoe,
-            size=size,
-            color=color,
-            price=price,
-            defaults={'quantity': quantity}
-        )
+        serializer = CartItemSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
 
-        if not created:
-            cart_item.quantity += quantity
-            cart_item.save()
-
-        serializer = CartItemSerializer(cart_item)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+    @extend_schema(tags=['Cart'], description='Remove items from cart.')
     @action(detail=True, methods=['delete'])
     def remove_item(self, request, pk=None):
         user = request.user
@@ -115,7 +104,3 @@ class CartViewSet(viewsets.ViewSet):
         cart_item = get_object_or_404(CartItem, cart=cart, id=pk)
         cart_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class CartItemViewSet(viewsets.ModelViewSet):
-    queryset = Cart.objects.all()
