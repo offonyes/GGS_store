@@ -24,7 +24,7 @@ This is the backend of a Shoe Store application developed using Django and Djang
 - Python 3.12
 1. Clone the repository:
 ```shell
-git clone https://github.com/offonyes/Library_Management
+git clone https://github.com/offonyes/GGS_store
 ```
 2. Install dependencies:
 ```shell
