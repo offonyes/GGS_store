@@ -1,5 +1,3 @@
-Sure, here's a sample README for your project:
-
 ---
 
 # Shoe Store Backend
